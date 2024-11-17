@@ -2,10 +2,11 @@ FROM ruby:latest
 
 # uncomment these if you are having this issue with the build:
 # /usr/local/bundle/gems/jekyll-4.3.4/lib/jekyll/site.rb:509:in `initialize': Permission denied @ rb_sysopen - /srv/jekyll/.jekyll-cache/.gitignore (Errno::EACCES)
-# ARG GROUPID=901
-# ARG GROUPNAME=ruby
-# ARG USERID=901
-# ARG USERNAME=jekyll
+ARG GROUPID=901
+ARG GROUPNAME=ruby
+ARG USERID=901
+ARG USERNAME=jekyll
+
 
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -16,9 +17,14 @@ LABEL authors="Amir Pourmand,George Araújo" \
 # uncomment these if you are having this issue with the build:
 # /usr/local/bundle/gems/jekyll-4.3.4/lib/jekyll/site.rb:509:in `initialize': Permission denied @ rb_sysopen - /srv/jekyll/.jekyll-cache/.gitignore (Errno::EACCES)
 # add a non-root user to the image with a specific group and user id to avoid permission issues
-# RUN groupadd -r $GROUPNAME -g $GROUPID && \
-#     useradd -u $USERID -m -g $GROUPNAME $USERNAME
+RUN groupadd -r $GROUPNAME -g $GROUPID && \
+    useradd -u $USERID -m -g $GROUPNAME $USERNAME
 
+# Set ownership of the Jekyll directory
+
+# Switch to the non-root user
+USER $USERNAME
+USER root
 # install system dependencies
 RUN apt-get update -y && \
     apt-get install -y --no-install-recommends \
@@ -51,6 +57,7 @@ ENV EXECJS_RUNTIME=Node \
 
 # create a directory for the jekyll site
 RUN mkdir /srv/jekyll
+ADD _config.yml /srv/jekyll
 
 # copy the Gemfile and Gemfile.lock to the image
 ADD Gemfile.lock /srv/jekyll
