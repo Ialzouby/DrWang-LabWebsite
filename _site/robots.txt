@@ -1,4 +1,4 @@
 User-agent: *
 Disallow:
 
-Sitemap: http://localhost:4000/al-folio/sitemap.xml
+Sitemap: http://0.0.0.0:8080/drwang-labwebsite/sitemap.xml
